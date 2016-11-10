@@ -1,0 +1,40 @@
+NAME = trabalho05_130010219
+
+SRC_DIR = src
+INC_DIR = include
+OBJ_DIR = obj
+BIN_DIR = bin
+
+TARGET = $(BIN_DIR)/$(NAME) 
+
+CC = gcc
+CFLAGS = -Wall -g
+
+SRC = ${wildcard $(SRC_DIR)/*.c}
+OBJ = ${addprefix $(OBJ_DIR)/, ${notdir ${SRC:.c=.o}}}
+
+.PHONY: clean dist-clean
+
+all:
+	@echo criando diretorios
+	@mkdir -p $(OBJ_DIR) $(BIN_DIR)
+	$(MAKE) $(TARGET)
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	@echo construindo objeto $@
+	@echo debug $< @ $@
+	$(CC) -c $(CFLAGS) -I$(INC_DIR) $< -o $@
+
+$(TARGET): $(OBJ)
+	$(CC) $(OBJ) $(CFLAGS) -o $@
+	@echo terminado
+
+clean:
+	@echo limpando...
+	@find . -name *.o -exec rm {} \;
+	@rm -rf *~ *.o prog out.txt
+
+dist-clean: clean
+	@echo Limpando com dist-clean
+	@rm -f $(TARGET)
+	@rm -rf $(BIN_DIR)
