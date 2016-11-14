@@ -19,8 +19,6 @@ int main(int argc, char* argv[])
 		return 0;
 	}
 
-	printf("Threads amount: %d\n", threads_amount);
-
 	pthread_t* threads = initialize_thread_vector(threads_amount);
 	struct thread_arguments* thread_arguments = initialize_thread_arguments_vector(threads_amount);
 

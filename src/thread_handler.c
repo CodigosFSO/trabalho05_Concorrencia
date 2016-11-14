@@ -3,6 +3,7 @@
 #include <pthread.h>
 
 #include "thread_handler.h"
+#include "benchmark.h"
 
 int get_threads_amount(char *argument)
 {
@@ -49,16 +50,23 @@ void create_threads(pthread_t* threads, int threads_amount, struct thread_argume
 void* print_char(void* thread_arguments)
 {
 	struct thread_arguments* thread_args = (struct thread_arguments*) thread_arguments;
+	struct timespec last_print;
 	char c;
 	int counter = 0;
 
 	c = find_thread_char(thread_args->thread_number);
 
-	for(counter = 0; counter < thread_args->thread_number; counter++) {
-		fprintf(stdout, "%c", c);
-	}
+	last_print = get_time();
+	while(1) {
+		if(get_time_elapsed(last_print) > 500000000) {
+			last_print = get_time();
+			for(counter = 0; counter < thread_args->thread_number; counter++) {
+				fprintf(stdout, "%c", c);
+			}
 
-		fprintf(stdout, "\n");
+				fprintf(stdout, "\n");
+		}
+	}
 
 		return NULL;
 }
