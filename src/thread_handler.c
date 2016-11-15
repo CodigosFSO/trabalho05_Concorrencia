@@ -36,12 +36,15 @@ struct thread_arguments* initialize_thread_arguments_vector(int threads_amount)
 	return thread_arguments;
 }
 
-void create_threads(pthread_t* threads, int threads_amount, struct thread_arguments* thread_arguments)
+void create_threads(pthread_t* threads, int threads_amount, struct thread_arguments* thread_arguments, 
+	sig_atomic_t* print_flag)
 {
 	int counter = 0;
 
 	while(counter < threads_amount) {
 		thread_arguments[counter].thread_number = (counter + 1);
+		thread_arguments[counter].print_counter = 0;
+		thread_arguments[counter].print_flag = print_flag;
 		pthread_create(&threads[counter], NULL, &print_char, &thread_arguments[counter]);
 		counter++;
 	}
@@ -57,9 +60,10 @@ void* print_char(void* thread_arguments)
 	c = find_thread_char(thread_args->thread_number);
 
 	last_print = get_time();
-	while(1) {
+	while(*(thread_args->print_flag)) {
 		if(get_time_elapsed(last_print) > 500000000) {
 			last_print = get_time();
+			thread_args->print_counter++;
 			for(counter = 0; counter < thread_args->thread_number; counter++) {
 				fprintf(stdout, "%c", c);
 			}
@@ -86,5 +90,18 @@ void join_threads(pthread_t* threads, int threads_amount)
 
 	for(counter = 0; counter < threads_amount; counter++) {
 		pthread_join(threads[counter], NULL);
+	}
+}
+
+void print_statistics(struct thread_arguments* thread_arguments, int threads_amount)
+{
+	int counter = 0;
+	printf("Aplicação encerrado com sucesso!\n");
+	printf("Estatísticas: \n");
+
+	while(counter < threads_amount) {
+		printf("thread %d: %d linhas.\n", thread_arguments[counter].thread_number,
+			thread_arguments[counter].print_counter);
+		counter++;
 	}
 }
