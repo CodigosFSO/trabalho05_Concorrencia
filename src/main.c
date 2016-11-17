@@ -7,6 +7,7 @@
 #include "thread_handler.h"
 
 sig_atomic_t print_flag = 1;
+pthread_mutex_t lock;
 
 void signal_handler(int signal_number)
 {
@@ -37,7 +38,7 @@ int main(int argc, char* argv[])
 	pthread_t* threads = initialize_thread_vector(threads_amount);
 	struct thread_arguments* thread_arguments = initialize_thread_arguments_vector(threads_amount);
 
-	create_threads(threads, threads_amount, thread_arguments, &print_flag);
+	create_threads(threads, threads_amount, thread_arguments, &print_flag, &lock);
 	join_threads(threads, threads_amount);
 
 	if(!print_flag) {
