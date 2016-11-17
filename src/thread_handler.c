@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <pthread.h>
+#include <unistd.h>
 
 #include "thread_handler.h"
-#include "benchmark.h"
 
 int get_threads_amount(char *argument)
 {
@@ -54,28 +54,26 @@ void create_threads(pthread_t* threads, int threads_amount, struct thread_argume
 void* print_char(void* thread_arguments)
 {
 	struct thread_arguments* thread_args = (struct thread_arguments*) thread_arguments;
-	struct timespec last_print;
 	char c;
 	int counter = 0;
 
 	c = find_thread_char(thread_args->thread_number);
 
-	last_print = get_time();
 	while(*(thread_args->print_flag)) {
-		if(get_time_elapsed(last_print) > 500000000) {
-			last_print = get_time();
-			thread_args->print_counter++;
 
-			pthread_mutex_lock(thread_args->lock);
+		pthread_mutex_lock(thread_args->lock);
 
-			for(counter = 0; counter < thread_args->thread_number; counter++) {
-				fprintf(stdout, "%c", c);
-			}
+		thread_args->print_counter++;
 
-			fprintf(stdout, "\n");
-
-			pthread_mutex_unlock(thread_args->lock);
+		for(counter = 0; counter < thread_args->thread_number; counter++) {
+			fprintf(stdout, "%c", c);
 		}
+
+		fprintf(stdout, "\n");
+
+		pthread_mutex_unlock(thread_args->lock);
+
+		usleep(500000);
 	}
 
 		return NULL;

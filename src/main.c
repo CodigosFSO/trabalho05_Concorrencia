@@ -11,7 +11,7 @@ pthread_mutex_t lock;
 
 void signal_handler(int signal_number)
 {
-	printf("Encerrando aplicação. Aguardando finalização das threads...\n");
+	printf("\nEncerrando aplicação. Aguardando finalização das threads...\n");
 	print_flag = 0;
 }
 
